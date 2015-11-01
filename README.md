@@ -2,7 +2,7 @@
 
 <strong>Calvin Mei,   Kayla Nguyen,   Vikrant Sanghvi </strong>
 
-Boston Hacks, 
+Boston Hacks 2015,  
 Oct 31 - Nov 1
 
 The objective of Full-Tank is to calculate exactly when and where you need to make a stop for gas so that you have one less thing on your mind and can fully enjoy that long road trip you've been thinking
