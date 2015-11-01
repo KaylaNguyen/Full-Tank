@@ -11,4 +11,4 @@ This application utilizes the Microsoft Bing Maps API services to optimize a rou
 
 We've also built it using PhoneGap, allowing crossplatform compatibility so that no one ever has to get stuck with an empty tank out in the middle of nowhere! 
 
-@BostonHacks2015
+#BostonHacks2015
