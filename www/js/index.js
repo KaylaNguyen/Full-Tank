@@ -1,49 +1,84 @@
-/*
- * Licensed to the Apache Software Foundation (ASF) under one
- * or more contributor license agreements.  See the NOTICE file
- * distributed with this work for additional information
- * regarding copyright ownership.  The ASF licenses this file
- * to you under the Apache License, Version 2.0 (the
- * "License"); you may not use this file except in compliance
- * with the License.  You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
-var app = {
-    // Application Constructor
-    initialize: function() {
-        this.bindEvents();
-    },
-    // Bind Event Listeners
-    //
-    // Bind any events that are required on startup. Common events are:
-    // 'load', 'deviceready', 'offline', and 'online'.
-    bindEvents: function() {
-        document.addEventListener('deviceready', this.onDeviceReady, false);
-    },
-    // deviceready Event Handler
-    //
-    // The scope of 'this' is the event. In order to call the 'receivedEvent'
-    // function, we must explicitly call 'app.receivedEvent(...);'
-    onDeviceReady: function() {
-        app.receivedEvent('deviceready');
-    },
-    // Update DOM on a Received Event
-    receivedEvent: function(id) {
-        var parentElement = document.getElementById(id);
-        var listeningElement = parentElement.querySelector('.listening');
-        var receivedElement = parentElement.querySelector('.received');
+﻿window.onresize = resize;
 
-        listeningElement.setAttribute('style', 'display:none;');
-        receivedElement.setAttribute('style', 'display:block;');
+var map = null;
+var mapHeight = 0;
+var bmKey = "YOUR_BING_MAPS_KEY";
+var d3MapTools = null;
+var schdstLayer = null;
+var schdst = null;
+var l1 = 0;
 
-        console.log('Received Event: ' + id);
+(function () {
+    "use strict";
+
+    document.addEventListener( 'deviceready', onDeviceReady.bind( this ), false );
+
+    function onDeviceReady() {
+        // Handle the Cordova pause and resume events
+        document.addEventListener('pause', onPause.bind(this), false);
+        document.addEventListener('resume', onResume.bind(this), false);
+
+        map = new Microsoft.Maps.Map(document.getElementById('divMap'), {
+            credentials: bmKey,
+            mapTypeId: Microsoft.Maps.MapTypeId.road,
+            center: new Microsoft.Maps.Location(47.490860, -121.835747),
+            zoom: 9,
+            showDashboard: true,
+            enableClickableLogo: false,
+            enableSearchLogo: false
+        });
+
+        //Register and load the D3 Overlay Module
+        Microsoft.Maps.registerModule("D3OverlayModule", "scripts/D3OverlayManager.js");
+        Microsoft.Maps.loadModule("D3OverlayModule", {
+            callback: resize
+        });
+    };
+
+    function onPause() {
+        // TODO: This application has been suspended. Save application state here.
+    };
+
+    function onResume() {
+        // TODO: This application has been reactivated. Restore application state here.
+    };
+})();
+
+function resize() {
+    var mapDiv = document.getElementById("divMap");
+    var windowHeight = $(window).height();
+    mapHeight = windowHeight - 50;
+    mapDiv.style.height = mapHeight + "px";
+}
+
+function toggleDS1() {
+    if (l1 == 0) {
+        l1 = 1;
+        loadSchDst();
     }
-};
+    else {
+        l1 = 0;
+        d3MapTools.removeLayer(schdstLayer);
+    }
+}
+
+function loadSchDst() {
+    d3MapTools = new D3OverlayManager(map);
+    schdstLayer = d3MapTools.addLayer({
+        loaded: function (svg, projection) {
+            //Add the school districts to the svg layer.
+            d3.json('data/schdst_area_3.js', function (error, topology) {
+                var topoData = topojson.feature(topology, topology.objects.schdst_area).features;
+
+                schdst = svg.selectAll('path')
+                    .data(topoData)
+                  .enter().append('path')
+                    .attr('class', 'schdst')
+                    .attr('d', projection)
+                .on('click', function (feature) {
+                    alert('You clicked on school-district: ' + feature.properties.Name);
+                });
+            });
+        }
+    });
+}
