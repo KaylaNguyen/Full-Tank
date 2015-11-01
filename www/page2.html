@@ -6,6 +6,7 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
 
 <script src="js/foundation.min.js" type="text/javascript"></script>
+<script src="js/foundation.slider.js" type="text/javascript"></script>
 <link rel="stylesheet" type="text/css" href="css/foundation.min.css">
 
 <!-- Latest compiled and minified CSS -->
@@ -34,9 +35,9 @@
 
   <div class="controls form-inline">
 		<label>Source: </label>
-		<input class="form-control" id="source" type="text" value="load value into here" readonly>
+		<input class="form-control" id="source" type="text" value='getSourceValue()'>
 		<label>Destination: </label>
-		<input class="form-control" id="destination" type="text" value="load value into here" readonly>
+		<input class="form-control" id="destination" type="text" value="getDestinationValue()" >
   </div>
 
    		<div class="row">
@@ -54,7 +55,6 @@
 		<div class="container" id="gas-remaining">
 			<p>fuel slider indicator here</p>
 		</div>
-
   
  </div>
 </div> 
@@ -63,6 +63,9 @@
    position:absolute; left:0px; top:40%;"></div> 
 </body>
 
-
+<script type="text/javascript">
+	setSourceValue();
+	setDestinationValue();
+</script>
 
 </html>
