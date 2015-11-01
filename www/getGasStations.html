@@ -1,0 +1,95 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+  <head>
+  <title>Load map with navigation bar module</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+  <script type="text/javascript" src="http://ecn.dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=7.0"></script>
+  <script type="text/javascript">
+  var map = null;
+  var searchManager = null;
+  function getMap()
+  {
+    map = new Microsoft.Maps.Map(document.getElementById('myMap'), {credentials: 'AoKQtG7b2nMnuDnHJSSKWh4UsN2ElHfqQaVhW75bMy6O9HEw-mSPm6yh18EY_6mM'});
+  }
+  function createSearchManager() 
+  {
+      map.addComponent('searchManager', new Microsoft.Maps.Search.SearchManager(map)); 
+      searchManager = map.getComponent('searchManager'); 
+  }
+  function LoadSearchModule()
+  {
+    Microsoft.Maps.loadModule('Microsoft.Maps.Search', { callback: searchRequest })
+  }
+  function searchRequest() 
+  { 
+    createSearchManager(); 
+    var what = 'gas stations'; 
+    var where = 'boston, ma'; 
+    var request = 
+        { 
+            what: what, 
+            where: where, 
+            count: 50, 
+            startIndex: 0, 
+            bounds: map.getBounds(), 
+            callback: search_onSearchSuccess, 
+            errorCallback: search_onSearchFailure, 
+        }; 
+    searchManager.search(request); 
+  } 
+  function search_onSearchSuccess(result, userData) 
+  { 
+    map.entities.clear(); 
+    var searchResults = result && result.searchResults; 
+    if (searchResults) { 
+        for (var i = 0; i < searchResults.length; i++) { 
+            search_createMapPin(searchResults[i]); 
+        } 
+        if (result.searchRegion && result.searchRegion.mapBounds) { 
+            map.setView({ bounds: result.searchRegion.mapBounds.locationRect }); 
+        } 
+        else 
+        { 
+            console.log('No results returned, Please try after sometime.'); 
+        } 
+    } 
+  } 
+  function search_createMapPin(result) 
+  { 
+    if (result) { 
+        var pin = new Microsoft.Maps.Pushpin(result.location, null); 
+        Microsoft.Maps.Events.addHandler(pin, 'click', function () { search_showInfoBox(result) }); 
+        map.entities.push(pin); 
+    } 
+  } 
+  function search_showInfoBox(result) 
+  { 
+    if (currInfobox) { 
+        currInfobox.setOptions({ visible: true }); 
+        map.entities.remove(currInfobox); 
+    } 
+    currInfobox = new Microsoft.Maps.Infobox( 
+        result.location, 
+        { 
+            title: result.name, 
+            description: [result.address, result.city, result.state, result.country, result.phone].join(' '), 
+            showPointer: true, 
+            titleAction: null, 
+            titleClickHandler: null 
+        }); 
+    currInfobox.setOptions({ visible: true }); 
+    map.entities.push(currInfobox); 
+  } 
+  function search_onSearchFailure(result, userData) 
+  { 
+    console.log('Search failed'); 
+  } 
+  </script>
+  </head>
+  <body onload="getMap();">
+    <div id='myMap' style="position:relative; width:400px; height:400px;"></div>
+    <div>
+        <input type="button" value="Find Gas Stations" onclick="LoadSearchModule();" />
+    </div>
+  </body>
+</html>
