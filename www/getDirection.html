@@ -40,6 +40,9 @@
         directionsManager.addWaypoint(seattleWaypoint);
         var tacomaWaypoint = new Microsoft.Maps.Directions.Waypoint({ address: 'Tacoma, WA', location: new Microsoft.Maps.Location(47.255134, -122.441650) });
         directionsManager.addWaypoint(tacomaWaypoint);
+
+        directionsManager.addWaypoint(new Microsoft.Maps.Directions.Waypoint({ address: 'Issaquah, WA', location: new Microsoft.Maps.Location(47.530094, -122.033798) }), 1);
+
         // Set the element in which the itinerary will be rendered
         directionsManager.setRenderOptions({ itineraryContainer: document.getElementById('directionsItinerary') });
         console.log('Calculating directions...');
@@ -56,6 +59,8 @@
           createDrivingRoute();
         }
        }
+
+
       </script>
    </head>
  <body onload="getMap();">
