@@ -24,10 +24,10 @@
               displayMessage = 'Directions Module loaded\n';
               displayMessage += 'Directions Manager loaded';
           }
-          alert(displayMessage);
+          console.log(displayMessage);
           directionsManager.resetDirections();
-          directionsErrorEventObj = Microsoft.Maps.Events.addHandler(directionsManager, 'directionsError', function(arg) { alert(arg.message) });
-          directionsUpdatedEventObj = Microsoft.Maps.Events.addHandler(directionsManager, 'directionsUpdated', function() { alert('Directions updated') });
+          directionsErrorEventObj = Microsoft.Maps.Events.addHandler(directionsManager, 'directionsError', function(arg) { console.log(arg.message) });
+          directionsUpdatedEventObj = Microsoft.Maps.Events.addHandler(directionsManager, 'directionsUpdated', function() { console.log('Directions updated') });
       }
       
       function createDrivingRoute()
@@ -42,7 +42,7 @@
         directionsManager.addWaypoint(tacomaWaypoint);
         // Set the element in which the itinerary will be rendered
         directionsManager.setRenderOptions({ itineraryContainer: document.getElementById('directionsItinerary') });
-        alert('Calculating directions...');
+        console.log('Calculating directions...');
         directionsManager.calculateDirections();
       }
 
