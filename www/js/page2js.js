@@ -2,6 +2,20 @@ window.onload  = GetMap;
 var map = null;
 var searchManager = null;
 var currInfobox = null;
+var directionsManager;
+var directionsErrorEventObj;
+var directionsUpdatedEventObj; 
+
+function calculateDistanceThreshold(){
+  var data = getDataPackage();
+
+  var mileage = data[2];                    // Miles per gallon
+  var capacity = data[3];                   // Gallons
+  var gasRemaining = $('#gas-remaining');   // Percentage 
+
+  // 50% of a 20 gal tank = 10,   * 15 mi/hr = 150 mi until completely empty,   *0.9 => Distance threshol = 135 mi 
+  return (gasRemaining*capacity*mileage)*0.90;
+}
 
 function getDataPackage(){
   var query = window.location.search;
@@ -17,7 +31,6 @@ function getDataPackage(){
 
 function setSourceValue(){
   var data = getDataPackage();
-  console.log('sdfsd');
   $("#source").val(data[0]);
 }
 
@@ -26,10 +39,52 @@ function setDestinationValue(){
   $("#destination").val(data[1]);
 }
 
+
+function createDirectionsManager()
+      {
+          var displayMessage;
+          if (!directionsManager) 
+          {
+              directionsManager = new Microsoft.Maps.Directions.DirectionsManager(map);
+              displayMessage = 'Directions Module loaded\n';
+              displayMessage += 'Directions Manager loaded';
+          }
+          console.log(displayMessage);
+          directionsManager.resetDirections();
+          directionsErrorEventObj = Microsoft.Maps.Events.addHandler(directionsManager, 'directionsError', function(arg) { console.log(arg.message) });
+          directionsUpdatedEventObj = Microsoft.Maps.Events.addHandler(directionsManager, 'directionsUpdated', function() { console.log('Directions updated') });
+      }
+      
+      function createDrivingRoute()
+      {
+        if (!directionsManager) { createDirectionsManager(); }
+        directionsManager.resetDirections();
+        // Set Route Mode to driving 
+        directionsManager.setRequestOptions({ routeMode: Microsoft.Maps.Directions.RouteMode.driving });
+        var seattleWaypoint = new Microsoft.Maps.Directions.Waypoint({ address: getDataPackage()[0] });
+        directionsManager.addWaypoint(seattleWaypoint);
+        var tacomaWaypoint = new Microsoft.Maps.Directions.Waypoint({ address: getDataPackage()[1] });
+        directionsManager.addWaypoint(tacomaWaypoint);
+        //directionsManager.addWaypoint(new Microsoft.Maps.Directions.Waypoint({ address: '<gas station chosen', location: new Microsoft.Maps.Location(47.530094, -122.033798) }), 1);
+        // Set the element in which the itinerary will be rendered
+        directionsManager.setRenderOptions({ itineraryContainer: document.getElementById('directionsItinerary') });
+        console.log('Calculating directions...');
+        directionsManager.calculateDirections();
+      }
+
+      function createDirections() {
+        if (!directionsManager){
+          Microsoft.Maps.loadModule('Microsoft.Maps.Directions', { callback: createDrivingRoute });
+        }
+        else{
+          createDrivingRoute();
+        }
+      }
+
 function GetMap(){
    Microsoft.Maps.loadModule('Microsoft.Maps.Themes.BingTheme', { callback: function() 
        {
-           map = new  Microsoft.Maps.Map(document.getElementById('divMap'), 
+           map = new Microsoft.Maps.Map(document.getElementById('divMap'), 
            { 
               credentials: "AoKQtG7b2nMnuDnHJSSKWh4UsN2ElHfqQaVhW75bMy6O9HEw-mSPm6yh18EY_6mM",
               mapTypeId:  Microsoft.Maps.MapTypeId.road,
