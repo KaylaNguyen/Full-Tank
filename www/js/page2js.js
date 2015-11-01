@@ -3,6 +3,29 @@ var map = null;
 var searchManager = null;
 var currInfobox = null;
 
+function getDataPackage(){
+  var query = window.location.search;
+  if (query.substring(0, 1) == '?') {
+    query = query.substring(1);
+  }
+  var data = query.split(','); 
+  for (i = 0; (i < data.length); i++) {
+    data[i] = unescape(data[i]);
+  }
+  return data;
+}
+
+function setSourceValue(){
+  var data = getDataPackage();
+  console.log('sdfsd');
+  $("#source").val(data[0]);
+}
+
+function setDestinationValue(){
+  var data = getDataPackage();
+  $("#destination").val(data[1]);
+}
+
 function GetMap(){
    Microsoft.Maps.loadModule('Microsoft.Maps.Themes.BingTheme', { callback: function() 
        {
