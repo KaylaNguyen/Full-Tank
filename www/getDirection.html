@@ -47,7 +47,42 @@
         directionsManager.setRenderOptions({ itineraryContainer: document.getElementById('directionsItinerary') });
         console.log('Calculating directions...');
         directionsManager.calculateDirections();
-      }
+
+         // Specify a handler for when the directions are calculated
+            Microsoft.Maps.Events.addHandler(directionsManager, 'directionsUpdated', displayMessage);
+            Microsoft.Maps.Events.addHandler(directionsManager, 'directionsError', displayError);
+
+            console.log(directionsManager.getRequestOptions().distanceUnit);
+
+       
+        }
+
+        function displayMessage(e)
+         {      
+            //console.log("The calculated route has " + e.route[0].routeLegs[0].itineraryItems[0].distance + " direction steps."); 
+
+            console.log(e.route); 
+          var sumDistTraveled = 0;
+          for(var i = 0; i < e.route.length; i++){
+            var route = e.route[i];
+            for(var j = 0; j < route.routeLegs.length; j++){
+              var routeLeg = route.routeLegs[j];
+              //var directionSteps = routeleg.itineraryItems; 
+              for(var k = 0; k < routeLeg.itineraryItems.length; k++){
+                var step = routeLeg.itineraryItems[k];
+                sumDistTraveled += parseFloat(step.distance);
+                console.log(step.coordinate);
+              }
+            }
+          }
+          console.log("sum " + sumDistTraveled);
+      
+         }
+
+         function displayError(e)
+         {
+            console.log("An error has occurred calculating the directions.");
+         }
 
       function createDirections() {
         if (!directionsManager)
@@ -57,8 +92,8 @@
         else
         {
           createDrivingRoute();
-        }
        }
+     }
 
 
       </script>
