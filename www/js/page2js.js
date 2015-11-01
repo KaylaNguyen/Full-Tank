@@ -6,6 +6,17 @@ var directionsManager;
 var directionsErrorEventObj;
 var directionsUpdatedEventObj; 
 
+function calculateDistanceThreshold(){
+  var data = getDataPackage();
+
+  var mileage = data[2];                    // Miles per gallon
+  var capacity = data[3];                   // Gallons
+  var gasRemaining = $('#gas-remaining');   // Percentage 
+
+  // 50% of a 20 gal tank = 10,   * 15 mi/hr = 150 mi until completely empty,   *0.9 => Distance threshol = 135 mi 
+  return (gasRemaining*capacity*mileage)*0.90;
+}
+
 function getDataPackage(){
   var query = window.location.search;
   if (query.substring(0, 1) == '?') {
@@ -61,16 +72,14 @@ function createDirectionsManager()
         directionsManager.calculateDirections();
       }
 
-            function createDirections() {
-        if (!directionsManager)
-        {
+      function createDirections() {
+        if (!directionsManager){
           Microsoft.Maps.loadModule('Microsoft.Maps.Directions', { callback: createDrivingRoute });
         }
-        else
-        {
+        else{
           createDrivingRoute();
         }
-       }
+      }
 
 function GetMap(){
    Microsoft.Maps.loadModule('Microsoft.Maps.Themes.BingTheme', { callback: function() 
